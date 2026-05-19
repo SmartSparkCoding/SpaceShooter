@@ -9,6 +9,7 @@ import { UIManager, drawHudDecor } from './ui.js';
 import { createStarLayers, drawEnemyShip, drawPlayerShip, drawPowerUp, drawStarfield } from './assets.js';
 
 const LS_KEY = 'space-shooter-local-scores';
+const MAX_PARTICLES = 700;
 
 export class Game {
   constructor(canvas) {
@@ -274,13 +275,14 @@ export class Game {
     this.state = 'gameover';
     this.ui.setFinalScore(this.score);
     this.ui.setScreen('gameover');
-    this.saveLocalScore('YOU', this.score);
+    this.saveLocalScore('ACE', this.score);
     this.fetchScores().then(() => this.ui.renderLeaderboard(this.mergeScores()));
   }
 
   saveLocalScore(name, score) {
-    this.localScores.push({ name, score, created_at: new Date().toISOString() });
-    this.localScores.sort((a, b) => (b.score - a.score) || Date.parse(a.created_at) - Date.parse(b.created_at));
+    const entry = normalizeScoreEntry({ name, score, created_at: new Date().toISOString() });
+    if (entry) this.localScores.push(entry);
+    this.localScores.sort(sortScores);
     this.localScores = this.localScores.slice(0, 10);
     localStorage.setItem(LS_KEY, JSON.stringify(this.localScores));
   }
@@ -290,7 +292,7 @@ export class Game {
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return [];
       const arr = JSON.parse(raw);
-      return Array.isArray(arr) ? arr.filter((s) => typeof s?.name === 'string' && Number.isInteger(s?.score)) : [];
+      return Array.isArray(arr) ? arr.map(normalizeScoreEntry).filter(Boolean) : [];
     } catch {
       return [];
     }
@@ -311,9 +313,9 @@ export class Game {
 
   mergeScores() {
     const merged = [...this.localScores, ...this.serverScores]
-      .filter((x) => typeof x.name === 'string' && Number.isInteger(x.score))
-      .map((x) => ({ name: x.name.slice(0, 12), score: x.score, created_at: x.created_at || new Date(0).toISOString() }));
-    merged.sort((a, b) => (b.score - a.score) || Date.parse(a.created_at) - Date.parse(b.created_at));
+      .map(normalizeScoreEntry)
+      .filter(Boolean);
+    merged.sort(sortScores);
     return merged.slice(0, 10);
   }
 
@@ -342,7 +344,7 @@ export class Game {
   cleanupArrays() {
     this.bullets = this.bullets.filter((x) => !x.dead);
     this.enemies = this.enemies.filter((x) => !x.dead);
-    this.particles = this.particles.filter((x) => !x.dead).slice(-700);
+    this.particles = this.particles.filter((x) => !x.dead).slice(-MAX_PARTICLES);
     this.powerups = this.powerups.filter((x) => !x.dead);
   }
 
@@ -382,4 +384,21 @@ function distanceSq(a, b) {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
   return dx * dx + dy * dy;
+}
+
+function normalizeScoreEntry(entry) {
+  if (typeof entry?.name !== 'string' || !Number.isInteger(entry?.score)) {
+    return null;
+  }
+  const created_at = entry.created_at || new Date().toISOString();
+  return {
+    name: entry.name.trim().slice(0, 12),
+    score: entry.score,
+    created_at,
+    created_at_ms: Date.parse(created_at) || Date.now()
+  };
+}
+
+function sortScores(a, b) {
+  return (b.score - a.score) || (a.created_at_ms - b.created_at_ms);
 }

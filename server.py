@@ -93,7 +93,7 @@ def scores() -> Any:
         ).fetchall()
         return jsonify([dict(row) for row in rows])
 
-    client_ip = request.headers.get("X-Forwarded-For", request.remote_addr or "unknown")
+    client_ip = request.remote_addr or "unknown"
     if is_rate_limited(client_ip):
         return jsonify({"error": "Rate limit exceeded. Try again soon."}), 429
 

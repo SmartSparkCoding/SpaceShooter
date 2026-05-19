@@ -162,6 +162,6 @@ export class InputManager {
   }
 
   isFiring() {
-    return this.pointer.down || this.keys.has(' ') || this.keys.has('Spacebar') || this.keys.has('space');
+    return this.pointer.down || this.keys.has(' ') || this.keys.has('Spacebar');
   }
 }

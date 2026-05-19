@@ -1,5 +1,3 @@
-import { COLORS } from './assets.js';
-
 export class UIManager {
   constructor() {
     this.overlay = document.getElementById('overlay');
@@ -94,7 +92,7 @@ function escapeHtml(value) {
 }
 
 export function drawHudDecor(ctx, width) {
-  ctx.strokeStyle = COLORS.cyan;
+  ctx.strokeStyle = '#38f6ff';
   ctx.globalAlpha = 0.4;
   ctx.beginPath();
   ctx.moveTo(16, 44);
