@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Space Shooter</title>
+    <link rel="stylesheet" href="/static/css/style.css" />
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="hud">
+      <div class="hud-item">Score: <span id="hudScore">0</span></div>
+      <div class="hud-item">Wave: <span id="hudWave">1</span></div>
+      <div class="hud-item">Lives: <span id="hudLives">3</span></div>
+      <div id="healthBar"><div id="healthFill"></div></div>
+      <div id="powerupTimers"></div>
+    </div>
+
+    <div id="overlay">
+      <section id="menuPanel" class="panel">
+        <h1>Space Shooter</h1>
+        <p>Neon arcade chaos in deep space.</p>
+        <button id="startBtn">Start Mission</button>
+        <button id="viewScoresBtn">High Scores</button>
+      </section>
+
+      <section id="scoresPanel" class="panel hidden">
+        <h2>Top Pilots</h2>
+        <ol id="highscoreList"></ol>
+        <button id="scoresBackBtn">Back</button>
+      </section>
+
+      <section id="gameOverPanel" class="panel hidden">
+        <h2>Game Over</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <div class="save-row">
+          <input id="nameInput" maxlength="12" placeholder="Your name" value="ACE" />
+          <button id="saveScoreBtn">Save Score</button>
+        </div>
+        <button id="restartBtn">Retry</button>
+      </section>
+
+      <div id="pauseBadge" class="hidden">PAUSED</div>
+    </div>
+
+    <button id="mobilePause" aria-label="Pause">II</button>
+
+    <div id="mobileControls">
+      <div id="joystickArea" class="touch-control">
+        <div id="joystickStick"></div>
+      </div>
+      <button id="fireButton" class="touch-control">FIRE</button>
+    </div>
+
+    <script type="module" src="/static/js/main.js"></script>
+  </body>
+</html>
